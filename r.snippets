@@ -1,4 +1,358 @@
+# ------------------------------------------------------------
+# Snippets from https://github.com/gadenbuie/snippets	
+# ------------------------------------------------------------
+snippet tidyverse
+	library("ggplot2")
+	library("tibble")
+	library("tidyr")
+	library("readr")
+	library("purrr")
+	library("dplyr")
+	library("stringr")
+	library("forcats")
+	library("lubridate")
+	library("glue")
+	library("fs")
+	library("magrittr")
+	# library("broom") # optional
+	
+# ------------------------------------------------------------
+# operators
+# ------------------------------------------------------------
+
+snippet op:default
+	# use y if x is.null
+	`%||%` <- function(x, y) if (is.null(x)) y else x
+
+snippet op:notnull
+	# use y if x is not null (otherwise NULL)
+	`%??%` <- function(x, y) if (!is.null(x)) y
+
+snippet op:notnullish
+	# use y if x is not null(ish) (otherwise NULL)
+	`%??%` <- function(x, y) if (!is.null(x) && x != "") y
+	
+# ------------------------------------------------------------
+# general
+# ------------------------------------------------------------
+
+snippet aa
+	${1:var} <- ${1:var} %>%
+	  ${0}
+
+snippet qq
+	${1:var} %>%
+	  ${0}
+
+snippet aq
+	${1:newvar} <- ${2:df} %>%
+	  ${0}
+
+snippet prettydate
+	strftime(Sys.time(), "%A, %b %d, %Y")
+
+snippet tts
+	strftime(Sys.time(), "${1:%F %T}")
+
+snippet dateprnt
+	`r paste("# ${1:Author}", strftime(Sys.time(), "%A, %b %d, %Y"))`
+	
+snippet hdr
+	# ---- ${1:header} ----
+
+snippet a=
+	${1:opt} = ${1:opt}
+
+snippet zz
+	${1:var} <- ${1:var} %||% ${0}
+
+snippet hh
+	here::here("${1:path}")
+
+snippet ie
+	if (${1:cond}) ${2:true} else ${3:false}
+
+# ------------------------------------------------------------
+# ggplot2
+# ------------------------------------------------------------
+
+snippet gg "ggplot generic"
+	ggplot(${1:data}, aes(${2:aes})) + ${0}
+
+snippet gl "ggplot line"
+	ggplot(${1:data}, aes(${2:x}, ${3:y})) + 
+	geom_line()${0}
+
+snippet gp "ggplot point"
+	ggplot(${1:data}, aes(${2:x}, ${3:y})) + 
+	geom_point()${0}
+
+snippet gs "ggsave()"
+	ggsave("${1:filename}.pdf", width = ${2:6}, height = ${3:6})${0}
+
+snippet ge "geom_*"
+	geom_${1:point}(${0})
+
+snippet ggeb "element_blank"
+	element_blank($0)
+
+snippet gger "element_rect"
+	element_rect($0)
+
+snippet gget "element_text"
+	element_text($0)
+
+snippet ggel "element_line"
+	element_line($0)
+
+# ------------------------------------------------------------
+# dplyr, purrr
+# ------------------------------------------------------------
+snippet br "bind_rows()"
+	bind_rows(${0})
+
+snippet bc "bind_cols()"
+	bind_cols(${0})
+
+snippet jo "*_join"
+	${1:inner}_join(${0})
+
+snippet pmd "purrr::map_dfr()"
+	purrr::map_dfr(${0})
+
+snippet pmdc "purrr::map_dfc()"
+	purrr::map_dfc(${0})
+
+snippet pm "purrr::map()"
+	purrr::map(${0})
+
+snippet pmc "purrr::map_chr()"
+	purrr::map_chr(${0})
+
+snippet pmi "purrr::map_int()"
+	purrr::map_int(${0})
+
+snippet pmb "purrr::map_lgl()"
+	purrr::map_lgl(${0})
+
+snippet pmdb "purrr::map_dbl()"
+	purrr::map_dbl(${0})
+	
+# ------------------------------------------------------------
+# rmarkdown 
+# ------------------------------------------------------------
+snippet r
+	```{r ${1:label}, ${2:options}}
+	${0}
+	```	
 # separate two chunks
 snippet r2
 	```
 	```{r ${1:label}}
+	
+# ------------------------------------------------------------
+# Header for functions (4/15/2022)
+# ------------------------------------------------------------
+snippet fun_head
+	################################################################################
+	#                                                                              # 
+	#               ${2:name}           										   #
+	#                                                                              #    
+	################################################################################
+	# ---- DESCRIPTION: ------
+	# ${3:Description}
+	#
+	# ---- INPUTS: -----------
+	# ${4:Input} =  
+	#
+	# ---- OUTPUTS: ----------
+	# ${5:Output} = 
+	#
+	# ---- NOTES: ------------
+	#
+	# ---- REFERENCES(s): ----
+	#
+	# ---- AUTHOR(s): --------
+	`r paste0("# ${1:Author} (", Sys.time(), ")")`
+
+# the original header was different, so to fix old ones this is used
+snippet fun_fix
+	---- DESCRIPTION: ------
+	---- INPUTS: -----------
+	---- OUTPUTS: ----------
+	---- NOTES: ------------
+	---- REFERENCES(s): ----
+	---- AUTHOR(s): --------
+	
+# ------------------------------------------------------------
+# shortcut for matrix multiplication
+# ------------------------------------------------------------
+snippet mm 
+	%*%
+
+# ------------------------------------------------------------
+# shorcut to add headers to file
+# ------------------------------------------------------------
+# from ideas of https://stackoverflow.com/questions/2470248/write-lines-of-text-to-a-file-in-r
+snippet hfile
+	# type any text inside glue, 
+	# since it uses glue, you can add values from variables like {var}
+	txt <- glue("${1:text"}, 
+				 .trim = F
+				 )
+	file <- file("${2:filename}")
+	writeLines(${3:yourObject}, file)
+	close(file)
+	
+# ------------------------------------------------------------
+# Pivoting Shortcuts (8/23/2022)
+# from https://www.infoworld.com/article/3637083/never-look-up-tidyrs-pivotwider-or-pivotlonger-again.html
+# ------------------------------------------------------------
+snippet plonger
+	pivot_longer(${1:mydf},
+	             cols = ${2:columns to pivot long},
+	             names_to = "${3:desired name for category column}",
+	             values_to = "${4:desired name for value column}"
+	)
+	
+snippet pwider
+	pivot_wider(${1:mydf},
+	             # id_cols = ${2:optional vector of unaffected columns},
+	             names_from = c(${3:category column(s) to pivot wide}),
+	             values_from = c(${4:value column(s) that hold data for each category column}),
+	             names_sep = "_"         
+	)
+
+
+# ------------------------------------------------------------
+# Defaults
+# ------------------------------------------------------------
+snippet lib
+	library("${1:package}")
+
+snippet req
+	require("${1:package}")
+
+snippet src
+	source("${1:file.R}")
+
+snippet ret
+	return(${1:code})
+
+snippet mat
+	matrix(${1:data}, nrow = ${2:rows}, ncol = ${3:cols})
+
+snippet sg
+	setGeneric("${1:generic}", function(${2:x, ...}) {
+		standardGeneric("${1:generic}")
+	})
+
+snippet sm
+	setMethod("${1:generic}", ${2:class}, function(${2:x, ...}) {
+		${0}
+	})
+
+snippet sc
+	setClass("${1:Class}", slots = c(${2:name = "type"}))
+
+snippet if
+	if (${1:condition}) {
+		${0}
+	}
+
+snippet el
+	else {
+		${0}
+	}
+
+snippet ei
+	else if (${1:condition}) {
+		${0}
+	}
+
+snippet fun
+	${1:name} <- function(${2:variables}) {
+		${0}
+	}
+
+snippet for
+	for (${1:variable} in ${2:vector}) {
+		${0}
+	}
+
+snippet while
+	while (${1:condition}) {
+		${0}
+	}
+
+snippet switch
+	switch(${1:object},
+		${2:case} = ${3:action}
+	)
+
+snippet apply
+	apply(${1:array}, ${2:margin}, ${3:...})
+
+snippet lapply
+	lapply(${1:list}, ${2:function})
+
+snippet sapply
+	sapply(${1:list}, ${2:function})
+
+snippet mapply
+	mapply(${1:function}, ${2:...})
+
+snippet tapply
+	tapply(${1:vector}, ${2:index}, ${3:function})
+
+snippet vapply
+	vapply(${1:list}, ${2:function}, FUN.VALUE = ${3:type}, ${4:...})
+
+snippet rapply
+	rapply(${1:list}, ${2:function})
+
+snippet ts
+	`r paste("#", date(), "------------------------------\n")`
+
+snippet dl
+	`r paste("# ------------------------------\n")`
+
+snippet shinyapp
+	library(shiny)
+	
+	ui <- fluidPage(
+	  ${0}
+	)
+	
+	server <- function(input, output, session) {
+	  
+	}
+	
+	shinyApp(ui, server)
+
+snippet shinymod
+	${1:name}_UI <- function(id) {
+	  ns <- NS(id)
+	  tagList(
+		${0}
+	  )
+	}
+	
+	${1:name} <- function(input, output, session) {
+	  
+	}
+
+snippet tryc
+	${1:variable} <- tryCatch({
+		${2}
+	}, warning = function(w) {
+	message(sprintf("Warning in %s: %s", deparse(w[["call"]]), w[["message"]]))
+		${3}
+	}, error = function(e) {
+	message(sprintf("Error in %s: %s", deparse(e[["call"]]), e[["message"]]))
+		${4}
+	}, finally = {
+		${5}
+	})
+	
+	
