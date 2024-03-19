@@ -6,8 +6,142 @@
 # This document is all the snippets I may or may not use.
 # Modify snippets: `usethis::edit_rstudio_snippets()`
 
+# List of Snippets:
+# General
+# 	lib
+# 	libr - recommended
+# 	req
+# 	src - source
+# 	src2
+# 	src_env
+# 	src_env2
+# 	ret
+# 	ret_list
+# 	ret_list2
+# 	mat - matrix
+# 	sg - setGeneric
+# 	sm - setMethod
+# 	sc - setClass
+# 	shinyapp
+# 	shinymod
+# 	hh
+# 	aa
+# 	qq
+# 	aq
+# 	prettydate
+# 	tts - time to string
+# 	dateprnt
+# 	mm
+# 	a_eq
+# 	shrtcut - create a shortcut
+# 	quick_tip - create a tip
+# 	maxima
+# 	debug_mode
+# 	para_proc - parallel processing
+# 	bench_snip - benchmarking
+# 
+# Control Flow:
+# 	if - if
+# 	el - else
+# 	ei - else if
+# 	ie - if else
+# 	for
+# 	while
+# 	switch
+# 	tryc - try catch
+# 	TODO: tryc_r - try catch with restart
+#
+# Apply Family 	
+# 	apply
+# 	lapply
+# 	sapply
+# 	mapply
+# 	tapply
+# 	vapply
+# 	rapply
+# 
+# Standard Libraries
+# 	tidyverse
+# 	tidyverse2 - recommended using librarian
+#
+# Operators
+# 	op_default
+# 	zz
+# 	op_notnull
+# 	op_notnullish
+# 
+# Section Headers
+#   comm_time - comment with time
+# 	d_line - dashed line
+# 	hdr_main
+# 	hdr1
+# 	hdr2
+# 	hdr3
+# 	hdr4
+# 	
+# ggplot2
+# 	gg "ggplot generic"
+# 	ggl "ggplot line"
+# 	ggp "ggplot point"
+# 	ggs "ggsave()"
+# 	gge "geom_*"
+# 	ggeb "element_blank"
+# 	gger "element_rect"
+# 	gget "element_text"
+# 	ggel "element_line"
+# 	ggt "themes"
+# 	gg_cam
+# 	
+# dplyr, purrr:
+# 	br "bind_rows()"
+# 	bc "bind_cols()"
+# 	jo "*_join"
+# 	pm "purrr::map()"
+# 	pmc "purrr::map_chr()"
+# 	pmi "purrr::map_int()"
+# 	pmb "purrr::map_lgl()"
+# 	pmdb "purrr::map_dbl()"
+# 	plonger	
+# 	pwider
+# 	fun_map
+# 	lam_fun
+# 	
+# Rmarkdown/Quarto 
+# 	r
+# 	r2
+#   qmd_start
+# 	save_loc_data
+# 	dt
+# 	auth
+# 	
+# Functions:
+# 	fun
+# 	lilbox
+# 	fn_doc - use `docthis` to document a function
+# 	fun_author
+#
+# Saving Shorcuts
+# 	hfile - save a file with a header
+# 	filen - file name skeleton, not used as much
+# 	save_gg
+# 	save_walk
+# 	save_csv
+# 	save_bin
+# 	
+# Opening Files, Folders, or Browser:
+# 	open_path
+# 	open_proj
+# 	open_folder
+# 	open_file
+# 	open_edge
+# 	open_chrome
+
+
+
 # ------------------------------------------------------------
-# Defaults
+# 
+# General
+# 
 # ------------------------------------------------------------
 snippet lib
 	library("${1:package}")
@@ -23,9 +157,55 @@ snippet libr
 snippet req
 	require("${1:package}")
 
+# ------------------------------------------------------------
+# Shortcut: Sourcing Functions
+# ------------------------------------------------------------
 # below: `src2` is a better version	
 snippet src
 	source("${1:file.R}")
+
+# updates the `src` snippet to source a file in the `scripts` folder
+# update: Dec 13, 2023
+# source script
+snippet src2
+	source(here::here("scripts", "${1:file}.R"))
+
+# allows sourcing scripts to an environment
+snippet src_env
+	{
+	  # attach functions to environment
+	  ${1:proj_functions} <- new.env()
+	  source(here::here("scripts", "${2:file}.R"), local = ${1:proj_functions})
+	  attach(${1:proj_functions})
+	  rm(${1:proj_functions})
+	  
+	  # functions available in `${1:proj_functions}` environment
+	  cli::cli_alert_info(
+	    c(
+	      "These are custom functions avaiable for this project!\n",
+	      "Documentations is location in {.path {here(\"scripts\")}}")
+	      )
+	  cli::cat_bullet(paste0(ls("${1:proj_functions}"), "()"))
+	}
+
+# allows sourcing multiple scripts to an environment
+snippet src_env2
+	{
+	  # attach functions to environment
+	  ${1:proj_functions} <- new.env()
+	  here::here("scripts", c("${2:file}.R")) |>
+	  purrr::walk(~ source(.x, local = ${1:proj_functions}))
+	  attach(${1:proj_functions})
+	  rm(${1:proj_functions})
+	  
+	  # functions available in `${1:proj_functions}` environment
+	  cli::cli_alert_info(
+	    c(
+	      "These are custom functions avaiable for this project!\n",
+	      "Documentations is location in {.path {here(\"scripts\")}}")
+	      )
+	  cli::cat_bullet(paste0(ls("${1:proj_functions}"), "()"))
+	}	
 
 snippet ret
 	return(${1:code})
@@ -63,73 +243,6 @@ snippet sm
 snippet sc
 	setClass("${1:Class}", slots = c(${2:name = "type"}))
 
-snippet if
-	if (${1:condition}) {
-		${0}
-	}
-
-snippet el
-	else {
-		${0}
-	}
-
-snippet ei
-	else if (${1:condition}) {
-		${0}
-	}
-
-# edit June 2, 2023 to include `end of function`
-snippet fun
-	${1:name} <- function(${2:variables}) {
-		${0}
-		
-	    # ---- end of function ${1:name}
-	}
-
-snippet for
-	for (${1:variable} in ${2:vector}) {
-		${0}
-	}
-
-snippet while
-	while (${1:condition}) {
-		${0}
-	}
-
-snippet switch
-	switch(${1:object},
-		${2:case} = ${3:action}
-	)
-
-snippet apply
-	apply(${1:array}, ${2:margin}, ${3:...})
-
-snippet lapply
-	lapply(${1:list}, ${2:function})
-
-snippet sapply
-	sapply(${1:list}, ${2:function})
-
-snippet mapply
-	mapply(${1:function}, ${2:...})
-
-snippet tapply
-	tapply(${1:vector}, ${2:index}, ${3:function})
-
-snippet vapply
-	vapply(${1:list}, ${2:function}, FUN.VALUE = ${3:type}, ${4:...})
-
-snippet rapply
-	rapply(${1:list}, ${2:function})
-
-# comment time
-snippet comm_time
-	`r paste("#", date(), "------------------------------\n")`
-
-# dashed line
-snippet d_line
-	`r paste("# ------------------------------\n")`
-
 snippet shinyapp
 	library(shiny)
 	
@@ -154,24 +267,274 @@ snippet shinymod
 	${1:name} <- function(input, output, session) {
 	  
 	}
+	
+snippet hh
+	here::here("${1:path}")
 
-snippet tryc
-	${1:variable} <- tryCatch({
-		${2}
-	}, warning = function(w) {
-	message(sprintf("Warning in %s: %s", deparse(w[["call"]]), w[["message"]]))
-		${3}
-	}, error = function(e) {
-	message(sprintf("Error in %s: %s", deparse(e[["call"]]), e[["message"]]))
-		${4}
-	}, finally = {
-		${5}
-	})
+snippet aa
+	${1:var} <- ${1:var} %>%
+	  ${0}
+
+snippet qq
+	${1:var} %>%
+	  ${0}
+
+snippet aq
+	${1:newvar} <- ${2:df} %>%
+	  ${0}
+
+snippet prettydate
+	strftime(Sys.time(), "%A, %b %d, %Y")
+
+snippet tts
+	strftime(Sys.time(), "${1:%F %T}")
+
+snippet dateprnt
+	`r paste("# ${1:Author}", strftime(Sys.time(), "%A, %b %d, %Y"))`
+	
+# snippet a= # didnt work
+snippet a_eq
+	${1:opt} = ${1:opt}
+
+# ------------------------------------------------------------
+# Shortcut: For new shortcuts 
+# ------------------------------------------------------------
+# Nov 3, 2023
+# shortcut to creating a new shortcut. 
+snippet shrtcut
+	# `r paste0(rep("-", 60), collapse = "")`
+	# Shortcut: ${1:shortcut purpose}
+	# `r paste0(rep("-", 60), collapse = "")`
+	# `r format(Sys.Date(), "%b %d, %Y")`
+	# 
+	snippet ${2:shortcut_name}
+	  ${3:shortcut_code}
+	usethis::edit_rstudio_snippets() # delete after adding
+
+
+# ------------------------------------------------------------
+# Shortcut: Quick Tip 
+# ------------------------------------------------------------
+# Nov 03, 2023
+
+# snippet quick_tip
+#	# ============================================================================ #
+#	# ---- ${1:Name of Tip} ----
+#	# ============================================================================ #
+#	# `r format(Sys.Date(), "%b %d, %Y")`
+#	#
+#	
+#	# ============================================================================ #
+# update: Dec 13, 2023
+snippet quick_tip
+	# `r paste0(rep("=", 76), collapse = "")` #
+	# ---- ${1:Name of Tip} ----
+	# `r paste0(rep("=", 76), collapse = "")` #
+	# `r format(Sys.Date(), "%b %d, %Y")`
+	
+	# `r paste0(rep("=", 76), collapse = "")` #
+
+# ------------------------------------------------------------
+# Shortcut: Maximima Program
+# ------------------------------------------------------------
+# Oct 2023
+snippet maxima
+	```{maxima}`r ''`
+	L: sqrt(1 - 1/R^2);
+	assume(R > 0)$
+	'integrate(x, x, 0, L) = integrate(x, x, 0, L);
+	```
+
+# ------------------------------------------------------------
+# Shortcut: Set Debug Options
+# ------------------------------------------------------------
+# Dec 13, 2023
+# This is useful when wanting to debug a function. Temporalily set the debug
+# options to `recover` to stop when an error hits. Then, you can inspect the
+# environment and see what is going on.
+snippet debug_mode
+	{
+	options(error = recover)
+	# add code here
+	
+	}
+
+# ------------------------------------------------------------
+# Shortcut: Debug One Time
+# ------------------------------------------------------------
+# Dec 19, 2023
+# 
+snippet debug_1
+	debugonce(${1:fun})
+
+
+# ------------------------------------------------------------
+# Shortcut: Parallel Processing Template
+# ------------------------------------------------------------
+# Dec 14, 2023
+# 
+snippet para_proc
+	# look for `furrr` and `progressr` package, and will skip is not downloaded.
+	parallel_pkgs <- c("furrr", "progressr", "future")
+	if (all(map_lgl(parallel_pkgs, ~ nzchar(system.file(package = .x))))) {
+	
+	  librarian::shelf(parallel_pkgs)
+	  handlers("cli")
+	
+	  tictoc::tic() # <-- start clock
+	  plan(multisession, workers = 5)
+	
+	  with_progress({
+	    p <- progressor(steps = nrow(${1:data_frame}))
+	  
+	  ${1:data_frame} %>%
+	  mutate(
+	    # ${5:data_manipulation}
+	    ${2:new_var} = future_map(${3:col}, ~ ${4:func}, .progress = TRUE)
+	  )
+	  })
+	
+	  plan(sequential)
+	
+	  tictoc::toc() # <-- end clock
+	
+	  unshelf(parallel_pkgs)
+	} else {
+	  cli_alert_warning(
+	    c(
+	      "The packages {.pkg {parallel_pkgs}} ",
+	      "{col_red(\"were not found\")} in your search path.\n\n",
+	      "If you want to do parallel processing, try:\n\n",
+	      "\t{.code librarian::shelf({parallel_pkgs[1]}, {parallel_pkgs[2]})}"
+	    )
+	  )
+	}
+	
+	rm(parallel_pkgs)
+
+# ------------------------------------------------------------
+# Shortcut: Benchmark
+# ------------------------------------------------------------
+# Dec 15, 2023
+# 
+snippet bench_snip
+	bench <- microbenchmark::microbenchmark(
+	    times = ${1:100},
+	    control = list(order = "inorder"),
+	    # check = "equal", # uncomment for equal
+	    ${2:one} = {
+	      ${3}
+	      },
+	    ${4:two} = {
+	      ${5}
+	    }
+	    )
+	boxplot(bench)
 	
 # ------------------------------------------------------------
-# Snippets below from https://github.com/gadenbuie/snippets	
+# 
+# Control Flow
+# 
 # ------------------------------------------------------------
-# standard libraries to load
+
+snippet if
+	if (${1:condition}) {
+		${0}
+	}
+
+snippet el
+	else {
+		${0}
+	}
+
+snippet ei
+	else if (${1:condition}) {
+		${0}
+	}
+
+snippet ie
+	if (${1:cond}) {
+	  ${2:true} 
+	 } else {
+	  ${3:false}
+	 }
+	
+snippet for
+	for (${1:variable} in ${2:vector}) {
+		${0}
+	}
+
+snippet while
+	while (${1:condition}) {
+		${0}
+	}
+
+snippet switch
+	switch(${1:object},
+		${2:case} = ${3:action}
+	)
+
+snippet tryc
+	${1:variable} <- 
+	  tryCatch({
+	    # main code
+	  	${2}
+	  }, warning = function(w) {
+	    # catch warning 
+	    message(sprintf("Warning in %s: %s", deparse(w[["call"]]), w[["message"]]))
+	  	${3}
+	  }, error = function(e) {
+	    # catch error
+	    message(sprintf("Error in %s: %s", deparse(e[["call"]]), e[["message"]]))
+	  	${4}
+	  }, finally = { # expression to be evaluated before returning or exiting
+	    # end code to run after main code if no errors, remove if not needed
+	  	${5}
+	  })
+
+# ------------------------------------------------------------
+# Shortcut: TODO: trycatch with restart
+# ------------------------------------------------------------
+# Dec 18, 2023
+# add a snippet for a trycatch with restart
+# snippet tryc_r
+
+
+
+# ------------------------------------------------------------
+# 
+# Apply Family
+# 
+# ------------------------------------------------------------
+
+snippet apply
+	apply(${1:array}, ${2:margin}, ${3:...})
+
+snippet lapply
+	lapply(${1:list}, ${2:function})
+
+snippet sapply
+	sapply(${1:list}, ${2:function})
+
+snippet mapply
+	mapply(${1:function}, ${2:...})
+
+snippet tapply
+	tapply(${1:vector}, ${2:index}, ${3:function})
+
+snippet vapply
+	vapply(${1:list}, ${2:function}, FUN.VALUE = ${3:type}, ${4:...})
+
+snippet rapply
+	rapply(${1:list}, ${2:function})
+
+
+# ------------------------------------------------------------
+# 
+# Standard Libraries
+# 
+# ------------------------------------------------------------
+# Snippets below inspired from https://github.com/gadenbuie/snippets	
 # updated with comment April 16, 2023
 # - this snippet not used anymore in favor of `tidyvers2` with 
 #   with `librarian` package
@@ -226,7 +589,9 @@ snippet tidyverse2
 
 
 # ------------------------------------------------------------
-# operators
+# 
+# Operators:
+# 
 # ------------------------------------------------------------
 
 #snippet op:default
@@ -234,6 +599,9 @@ snippet op_default
 	# use y if x is.null
 	`%||%` <- function(x, y) if (is.null(x)) y else x
 
+snippet zz 
+	${1:var} <- ${1:var} %||% ${0}
+	
 # snippet op:notnull
 snippet op_notnull
 	# use y if x is not null (otherwise NULL)
@@ -243,38 +611,43 @@ snippet op_notnull
 snippet op_notnullish
 	# use y if x is not null(ish) (otherwise NULL)
 	`%??%` <- function(x, y) if (!is.null(x) && x != "") y
+
+# ------------------------------------------------------------
+# Shortcut: Matrix Multiplication
+# ------------------------------------------------------------
+snippet mm 
+	%*%
+
+
+# ------------------------------------------------------------
+# 
+# Section Headers
+# 
+# ------------------------------------------------------------
+
+# comment time
+# update: Dec 18, 2023
+snippet comm_time
+	`r paste("#", date(), " ") |>
+	   stringr::str_pad(width = 78, side = "right", pad = "-") |>
+		 paste("#")`
+# `r paste("#", date(), "------------------------------ # \n")`
+
+# dashed line
+# update: Dec 18, 2023
+snippet d_line
+	`r paste("#", stringr::str_dup("-", times = 76), "#")`
+# `r paste("# ------------------------------ # \n")`
 	
-# ------------------------------------------------------------
-# general
-# ------------------------------------------------------------
-
-snippet aa
-	${1:var} <- ${1:var} %>%
-	  ${0}
-
-snippet qq
-	${1:var} %>%
-	  ${0}
-
-snippet aq
-	${1:newvar} <- ${2:df} %>%
-	  ${0}
-
-snippet prettydate
-	strftime(Sys.time(), "%A, %b %d, %Y")
-
-snippet tts
-	strftime(Sys.time(), "${1:%F %T}")
-
-snippet dateprnt
-	`r paste("# ${1:Author}", strftime(Sys.time(), "%A, %b %d, %Y"))`
-
-# ------------------------------------------------------------
-# Shortcut: Section Headers
-# ------------------------------------------------------------
 # Sebastian D.
 # Nov 12, 2022
 # updated: Dec 13, 2023
+snippet hdr_main
+	# `r paste0(rep("=", 76), collapse = "")` #
+	#
+	# ---- ${1:header} ----
+	#
+	# `r paste0(rep("=", 76), collapse = "")` #
 # snippet hdr1
 # 	# ============================================================================ #
 # 	# ---- ${1:header} ----
@@ -285,26 +658,19 @@ snippet hdr1
 	# `r paste0(rep("=", 76), collapse = "")` #
 
 snippet hdr2
-	# ---- ${1:header} ----
+	# ---- ${1:header} ---- #
 
 snippet hdr3
 	# ---- ${1:header}
 
-# snippet a= # didnt work
-snippet a_eq
-	${1:opt} = ${1:opt}
+snippet hdr4
+	# ---- ${1:header} ----
 
-snippet zz
-	${1:var} <- ${1:var} %||% ${0}
-
-snippet hh
-	here::here("${1:path}")
-
-snippet ie
-	if (${1:cond}) ${2:true} else ${3:false}
 
 # ------------------------------------------------------------
+# 
 # ggplot2
+# 
 # ------------------------------------------------------------
 
 snippet gg "ggplot generic"
@@ -340,9 +706,32 @@ snippet ggel "element_line"
 # ggthemes (default: calc)
 snippet ggt "themes"
 	ggthemes::theme_${1:calc}(base_size = 12, base_family = "serif")
+
+# ------------------------------------------------------------
+# Shortcut: Add Camcorder When Testing Plots
+# ------------------------------------------------------------
+# Feb 15, 2024
+# this will add code to use camcorder with typical values for saving. Once 
+# completed the adjustments, then save as normal using save_gg
+snippet gg_cam
+	shelf(camcorder)
+	# camcorder::gg_record(
+	#     dir    = here::here("data", "cam_test", "${1:fig_name}"),
+	#     device = "png",
+	#     width  = 90,
+	#     height = 90 * 0.5625,
+	#     dpi    = 600,
+	#     units  = "mm"
+	# )
+	
+	# shell.exec(here::here("data", "cam_test", "${1:fig_name}"))
+	# gg_stop_recording()
+
 	
 # ------------------------------------------------------------
+# 
 # dplyr, purrr
+# 
 # ------------------------------------------------------------
 snippet br "bind_rows()"
 	bind_rows(${0})
@@ -376,6 +765,45 @@ snippet pmb "purrr::map_lgl()"
 
 snippet pmdb "purrr::map_dbl()"
 	purrr::map_dbl(${0})
+	
+# ------------------------------------------------------------
+# Pivoting Shortcuts (August 23, 2022)
+# ------------------------------------------------------------
+# from https://www.infoworld.com/article/3637083/never-look-up-tidyrs-pivotwider-or-pivotlonger-again.html
+#snippet plonger
+#	pivot_longer(${1:mydf},
+#	             cols = ${2:columns to pivot long},
+#	             names_to = "${3:desired name for category column}",
+#	             values_to = "${4:desired name for value column}"
+#	)
+
+#snippet pwider
+#	pivot_wider(${1:mydf},
+#	             # id_cols = ${2:optional vector of unaffected columns},
+#	             names_from = c(${3:category column(s) to pivot wide}),
+#	             values_from = c(${4:value column(s) that hold data for each category column}),
+#	             names_sep = "_"         
+#	) 
+
+# update plonger (Janurary 30, 2023)
+snippet plonger	
+	 pivot_longer(
+	   data      = .,
+	   cols      = c(),     # columns to pivot long,
+	   names_to  = "name",  # desired name for category column
+	   values_to = "value", # desired name for value column
+	   )
+
+# update pwider (Feburary 02, 2023)
+snippet pwider
+	pivot_wider(
+	  data         = .,
+	  id_cols      = c(), # *optional* vector of unaffected columns,
+	  names_from   = c(), # category column(s) to pivot wide
+	  values_from  = c(), # value column(s) that hold data for each category column
+	  names_sep    = "_",
+	  names_repair = janitor::make_clean_names
+	  )
 
 # ------------------------------------------------------------
 # Shortcut: Function Use within `map()` function
@@ -400,7 +828,9 @@ snippet lam_fun
 	  }
 
 # ------------------------------------------------------------
-# rmarkdown 
+# 
+# Rmarkdown/Quarto
+# 
 # ------------------------------------------------------------
 # note: not necessary anymore
 snippet r
@@ -414,6 +844,149 @@ snippet r2
 	```
 	```{r ${1:label}}
 	
+# ------------------------------------------------------------
+# Shortcut: Start `qmd_start` function (Oct 2023)
+# ------------------------------------------------------------
+# since creating a template qmd file is hard, this is the header code
+# I want to use
+# date: "`r Sys.Date()`"
+# update Dec 17, 2023
+snippet qmd_start
+	if (!nzchar(system.file(package = "librarian"))) 
+		install.packages("librarian")
+
+	librarian::shelf(
+		quiet = TRUE,
+		librarian, conflicted, ggplot2, tibble, tidyr, readr, purrr, dplyr, stringr,
+		forcats, lubridate, glue, fs, magrittr, here,
+		
+		# additional
+		
+	)
+	
+	conflicts_prefer(
+	  dplyr::filter(), 
+	  dplyr::select()
+	  )
+	  
+		(function() {
+	  context <- rstudioapi::getActiveDocumentContext()
+
+	lign <- min(grep("format", context\$contents))
+	lign <- 1
+	rstudioapi::modifyRange(
+	  location = rstudioapi::document_range(
+	    rstudioapi::document_position(lign, 1),
+		  rstudioapi::document_position(lign, 77777)
+	  ),
+	  #text = paste0("author: \"Sebastian Di Geronimo\"\ndate: \"", Sys.Date(), "\"\n"),
+	  text = 
+	    paste0(
+		    "---\n",
+		    "title: \"${1:title}\"\n",
+		    "author: \"Sebastian Di Geronimo\"\ndate: \"", Sys.Date(), 
+		    "\"\nformat: html",
+		    "\neditor: source",
+		    "\n---\n\n",
+		    "# 1.0 ---- Summary of Document ----\n\n\n\n",
+		    "# 2.0 ---- Setup ----\n\n\n",
+	      "## 2.1 Load Libraries\n\n",
+	      "```{r setup, include=FALSE}"),
+	  id = context\$id
+	)
+
+	context <- rstudioapi::getActiveDocumentContext()
+	lign_start <- (grep("\\\(function\\\(\\\) \\\{", context\$contents))
+	lign_end <- (grep("\\\}\\\)\\\(\\\)", context\$contents))
+	rstudioapi::modifyRange(
+	  location = rstudioapi::document_range(
+	    rstudioapi::document_position(lign_start, 1),
+		      rstudioapi::document_position(lign_end, 777777)
+	  ),
+	  text = "",
+	  id = context\$id
+	)
+	})()${2:}
+	```
+
+	## 2.2 Load Dataset
+	
+	```{r load-data}
+	# run snippet after saving file
+	save_loc_data
+	
+# ------------------------------------------------------------
+# Shortcut: Set Location and Save Data
+# ------------------------------------------------------------
+# Dec 15, 2023
+# update: Dec 17, 2023
+#   - changed `stringr::str_remove("\\.qmd|\\.Rmd")`
+#            to  `tools::file_path_sans_ext()`")`
+snippet save_loc_data
+	# set location to save data and plots
+	dir_data_save <- here("data", "processed", "`r basename(rstudioapi::getActiveDocumentContext()$path) |> 
+	tools::file_path_sans_ext()`")
+	dir_plt_save  <- here("data", "plots", "`r basename(rstudioapi::getActiveDocumentContext()$path) |> 
+	tools::file_path_sans_ext()`")
+
+# ------------------------------------------------------------
+# Shortcut: Print Date
+# ------------------------------------------------------------
+# Mar 22, 2023
+# Used in qmd yaml header 
+# Not super useful now
+snippet dt
+	date: "`r Sys.Date()`"
+
+# ------------------------------------------------------------
+# Shortcut: Add Author to YAML Header
+# ------------------------------------------------------------
+# Dec 18, 2023
+# Will need to edit author name if different
+snippet auth
+	(function() {
+	  context <- rstudioapi::getActiveDocumentContext()
+
+	lign <- min(grep("format", context\$contents))
+	
+	rstudioapi::modifyRange(
+	  location = rstudioapi::document_range(
+	    rstudioapi::document_position(lign, 1),
+		      rstudioapi::document_position(lign, 1)
+	  ),
+	  text = paste0("author: \"Sebastian Di Geronimo\"\ndate: \"", Sys.Date(), "\"\n"),
+	  id   = context\$id
+	)
+
+	context    <- rstudioapi::getActiveDocumentContext()
+	lign_start <- min(grep("\\\(function\\\(\\\) \\\{", context\$contents))
+	lign_end   <- min(grep("\\\}\\\)\\\(\\\)", context\$contents))
+	
+	rstudioapi::modifyRange(
+	  location = rstudioapi::document_range(
+	    rstudioapi::document_position(lign_start, 1),
+		  rstudioapi::document_position(lign_end, 777777)
+	  ),
+	  text = "",
+	  id = context\$id
+	)
+	
+	})()
+
+
+# ------------------------------------------------------------
+# 
+# Functions 
+# 
+# ------------------------------------------------------------
+
+# edit June 2, 2023 to include `end of function`
+snippet fun
+	${1:name} <- function(${2:variables}) {
+		${0}
+		
+	    # ---- end of function ${1:name}
+	}
 
 # ------------------------------------------------------------
 # Shortcut: Function Box
@@ -438,6 +1011,7 @@ snippet lilbox
 	      rstudioapi::document_position(lign_start, 1),
 	      rstudioapi::document_position(lign_end + 1, 77777)
 	    )
+	  
 	  toutbeau <- function(x, fun_nm, l = 60) {
 	    x <- gsub("\n|\t|#|\\\.", " ", x)
 	    x <- stringr::str_trim(x)
@@ -490,10 +1064,10 @@ snippet lilbox
 	  })(text = "$$${1:}", fun_nm = "${2:func_name}")
 	  
 # ------------------------------------------------------------
-# Header for functions
+# Shortcut: Header for functions
 # ------------------------------------------------------------
 # Mar 29, 2023
-snippet fn_tst
+snippet fn_doc
 	cat(docthis::doc_this(${1:obj}))
 
 # removed (2/08/2022)
@@ -555,10 +1129,14 @@ snippet fun_author
 #	---- AUTHOR(s): --------
 
 # ------------------------------------------------------------
-# Shortcut: Matrix Multiplication
+
+
+
 # ------------------------------------------------------------
-snippet mm 
-	%*%
+#
+# Saving Shorcuts
+#
+# ------------------------------------------------------------
 
 # ------------------------------------------------------------
 # Shortcut: Add Header to File
@@ -573,53 +1151,7 @@ snippet hfile
 	file <- file("${2:filename}")
 	writeLines(${3:yourObject}, file)
 	close(file)
-	
-# ------------------------------------------------------------
-# Pivoting Shortcuts (August 23, 2022)
-# ------------------------------------------------------------
-# from https://www.infoworld.com/article/3637083/never-look-up-tidyrs-pivotwider-or-pivotlonger-again.html
-#snippet plonger
-#	pivot_longer(${1:mydf},
-#	             cols = ${2:columns to pivot long},
-#	             names_to = "${3:desired name for category column}",
-#	             values_to = "${4:desired name for value column}"
-#	)
 
-#snippet pwider
-#	pivot_wider(${1:mydf},
-#	             # id_cols = ${2:optional vector of unaffected columns},
-#	             names_from = c(${3:category column(s) to pivot wide}),
-#	             values_from = c(${4:value column(s) that hold data for each category column}),
-#	             names_sep = "_"         
-#	) 
-
-# update plonger (Janurary 30, 2023)
-snippet plonger	
-	 pivot_longer(
-	   data      = .,
-	   cols      = c(),     # columns to pivot long,
-	   names_to  = "name",  # desired name for category column
-	   values_to = "value", # desired name for value column
-	   )
-
-# update pwider (Feburary 02, 2023)
-snippet pwider
-	pivot_wider(
-	  data         = .,
-	  id_cols      = c(), # *optional* vector of unaffected columns,
-	  names_from   = c(), # category column(s) to pivot wide
-	  values_from  = c(), # value column(s) that hold data for each category column
-	  names_sep    = "_",
-	  names_repair = janitor::make_clean_names
-	  )
-
-
-# ------------------------------------------------------------
-# Shortcut: print date for qmd header (March 22, 2023)
-# ------------------------------------------------------------
-snippet dt
-	date: "`r Sys.Date()`"
-	
 # ------------------------------------------------------------
 # Shortcut: Get File Name Skeleton (April 4, 2023)
 # ------------------------------------------------------------	
@@ -725,7 +1257,7 @@ snippet save_walk
 
 
 # ------------------------------------------------------------
-# Shortcut: Start `save_csv` function
+# Shortcut: `save_csv` function
 # ------------------------------------------------------------
 # Oct 13, 2023
 snippet save_csv
@@ -741,238 +1273,96 @@ snippet save_csv
 	    utf_8          = FALSE
 	  )
 
-
 # ------------------------------------------------------------
-# Shortcut: Start `qmd_start` function (Oct 2023)
+# Shortcut: Save Binary File
 # ------------------------------------------------------------
-# since creating a template qmd file is hard, this is the header code
-# I want to use
-snippet qmd_start
-	date: "`r Sys.Date()`"
-	# 1.0 ---- Summary of Document ----
-	
-	
-	# 2.0 ---- Setup ----
-	
-	## 2.1 Load Libraries
-	```{r setup, include=FALSE}
-	if (!nzchar(system.file(package = "librarian"))) 
-		install.packages("librarian")
-
-	librarian::shelf(
-		quiet = TRUE,
-		librarian, conflicted, ggplot2, tibble, tidyr, readr, purrr, dplyr, stringr,
-		forcats, lubridate, glue, fs, magrittr, here,
-		
-		# additional
-		
-	)
-	
-	conflicts_prefer(
-	  dplyr::filter(), 
-	  dplyr::select()
-	  )
-
-	```
-
-	## 2.2 Load Dataset
-	
-	```{r load-data}
-	# set location to save data and plots
-	dir_data_save <- here("data", "processed", "`r basename(rstudioapi::getActiveDocumentContext()$path) |> 
-	tools::file_path_sans_ext()`")
-	dir_plt_save  <- here("data", "plots", "`r basename(rstudioapi::getActiveDocumentContext()$path) |> 
-	tools::file_path_sans_ext()`")
-	
-# ------------------------------------------------------------
-# Shortcut: Set Location and Save Data
-# ------------------------------------------------------------
-# Dec 15, 2023
-# update: Dec 17, 2023
-#   - changed `stringr::str_remove("\\.qmd|\\.Rmd")`
-#            to  `tools::file_path_sans_ext()`")`
-snippet save_loc_data
-	# set location to save data and plots
-	dir_data_save <- here("data", "processed", "`r basename(rstudioapi::getActiveDocumentContext()$path) |> 
-	tools::file_path_sans_ext()`")
-	dir_plt_save  <- here("data", "plots", "`r basename(rstudioapi::getActiveDocumentContext()$path) |> 
-	tools::file_path_sans_ext()`")
-
-#snippet test2
-#	`.snippet save_loc_data`
-#	# idk
-	
-# ------------------------------------------------------------
-# Shortcut: For new shortcuts 
-# ------------------------------------------------------------
-# Nov 3, 2023
-# shortcut to creating a new shortcut. 
-snippet shrtcut
-	# `r paste0(rep("-", 60), collapse = "")`
-	# Shortcut: ${1:shortcut purpose}
-	# `r paste0(rep("-", 60), collapse = "")`
-	# `r format(Sys.Date(), "%b %d, %Y")`
-	# 
-	snippet ${2:shortcut_name}
-	  ${3:shortcut_code}
-	usethis::edit_rstudio_snippets() # delete after adding
+# Dec 18, 2023
+# Save a file without a carriage return 
+snippet save_bin
+	write_file(${1:obj}, ${2:file_name})
 
 
 # ------------------------------------------------------------
-# Shortcut: Quick Tip 
-# ------------------------------------------------------------
-# Nov 03, 2023
-
-# snippet quick_tip
-#	# ============================================================================ #
-#	# ---- ${1:Name of Tip} ----
-#	# ============================================================================ #
-#	# `r format(Sys.Date(), "%b %d, %Y")`
-#	#
-#	
-#	# ============================================================================ #
-# update: Dec 13, 2023
-snippet quick_tip
-	# `r paste0(rep("=", 76), collapse = "")` #
-	# ---- ${1:Name of Tip} ----
-	# `r paste0(rep("=", 76), collapse = "")` #
-	# `r format(Sys.Date(), "%b %d, %Y")`
-	
-	# `r paste0(rep("=", 76), collapse = "")` #
-
-# ------------------------------------------------------------
-# Shortcut: Maximima Program
-# ------------------------------------------------------------
-# Oct 2023
-snippet maxima
-	```{maxima}`r ''`
-	L: sqrt(1 - 1/R^2);
-	assume(R > 0)$
-	'integrate(x, x, 0, L) = integrate(x, x, 0, L);
-	```
-
-# ------------------------------------------------------------
-# Shortcut: Set Debug Options
-# ------------------------------------------------------------
-# Dec 13, 2023
-# This is useful when wanting to debug a function. Temporalily set the debug
-# options to `recover` to stop when an error hits. Then, you can inspect the
-# environment and see what is going on.
-snippet debug_mode
-	{
-	options(error = recover)
-	# add code here
-	
-	}
-	
-# ------------------------------------------------------------
-# Shortcut: Sourcing Functions
-# ------------------------------------------------------------
-# updates the `src` snippet to source a file in the `scripts` folder
-# update: Dec 13, 2023
-# source script
-snippet src2
-	source(here::here("scripts", "${1:file}.R"))
-
-# allows sourcing scripts to an environment
-snippet src_env
-	{
-	  # attach functions to environment
-	  ${1:proj_functions} <- new.env()
-	  source(here::here("scripts", "${2:file}.R"), local = ${1:proj_functions})
-	  attach(${1:proj_functions})
-	  rm(${1:proj_functions})
-	  
-	  # functions available in `${1:proj_functions}` environment
-	  cli::cli_alert_info(
-	    c(
-	      "These are custom functions avaiable for this project!\n",
-	      "Documentations is location in {.path {here(\"scripts\")}}")
-	      )
-	  cli::cat_bullet(paste0(ls("${1:proj_functions}"), "()"))
-	}
-
-# allows sourcing multiple scripts to an environment
-snippet src_env2
-	{
-	  # attach functions to environment
-	  ${1:proj_functions} <- new.env()
-	  here::here("scripts", c("${2:file}.R")) |>
-	  purrr::walk(~ source(.x, local = ${1:proj_functions}))
-	  attach(${1:proj_functions})
-	  rm(${1:proj_functions})
-	  
-	  # functions available in `${1:proj_functions}` environment
-	  cli::cli_alert_info(
-	    c(
-	      "These are custom functions avaiable for this project!\n",
-	      "Documentations is location in {.path {here(\"scripts\")}}")
-	      )
-	  cli::cat_bullet(paste0(ls("${1:proj_functions}"), "()"))
-	}
-
-
-# ------------------------------------------------------------
-# Shortcut: Parallel Processing Template
-# ------------------------------------------------------------
-# Dec 14, 2023
 # 
-snippet para_proc
-	# look for `furrr` and `progressr` package, and will skip is not downloaded.
-	parallel_pkgs <- c("furrr", "progressr", "future")
-	if (all(map_lgl(parallel_pkgs, ~ nzchar(system.file(package = .x))))) {
-	
-	  librarian::shelf(parallel_pkgs)
-	  handlers("cli")
-	
-	  tictoc::tic() # <-- start clock
-	  plan(multisession, workers = 5)
-	
-	  with_progress({
-	    p <- progressor(steps = nrow(${1:data_frame}))
+# Opening Files, Folders, or Browser
+#
+# ------------------------------------------------------------
+
+# ------------------------------------------------------------
+# Shortcut: Open Path
+# ------------------------------------------------------------
+# Dec 18, 2023
+# Paste a path to open a folder or file
+snippet open_path
+	shell.exec(here::here(${1:path}))
+
+# ------------------------------------------------------------
+# Shortcut: Open Project
+# ------------------------------------------------------------
+# Dec 18, 2023
+# Set a path to an R project and open it in RStudio
+snippet open_proj
+	rstudioapi::openProject(
+	  path = `r pathformatr:::split_path(
+	     paste0(
+	       "here::here(\"", 
+	       rstudioapi::selectFile(
+	       path   = "D:/", 
+	       filter = "R Project (*.Rproj)") |> normalizePath(),
+	       "\")"
+	     ), 
+	     "here") |>
+	    stringr::str_replace("(D|C):", "\\1:/")`,
+	  newSession = TRUE)
 	  
-	  ${1:data_frame} %>%
-	  mutate(
-	    # ${5:data_manipulation}
-	    ${2:new_var} = future_map(${3:col}, ~ ${4:func}, .progress = TRUE)
-	  )
-	  })
-	
-	  plan(sequential)
-	
-	  tictoc::toc() # <-- end clock
-	
-	  unshelf(parallel_pkgs)
-	} else {
-	  cli_alert_warning(
-	    c(
-	      "The packages {.pkg {parallel_pkgs}} ",
-	      "{col_red(\"were not found\")} in your search path.\n\n",
-	      "If you want to do parallel processing, try:\n\n",
-	      "\t{.code librarian::shelf({parallel_pkgs[1]}, {parallel_pkgs[2]})}"
-	    )
-	  )
-	}
-	
-	rm(parallel_pkgs)
-	
+# ------------------------------------------------------------
+# Shortcut: Open Folder
+# ------------------------------------------------------------
+# Dec 18, 2023
+# Set a path to a folder and open it in the explorer window
+snippet open_folder
+	shell.exec(`r pathformatr:::split_path(
+	     paste0(
+	       "here::here(\"", 
+	       rstudioapi::selectDirectory(
+	       path   = "D:/") |> normalizePath(),
+	       "\")"
+	     ), 
+	     "here") |>
+	    stringr::str_replace("(D|C):", "\\1:/")`)
 
 
 # ------------------------------------------------------------
-# Shortcut: Benchmark
+# Shortcut: Open File
 # ------------------------------------------------------------
-# Dec 15, 2023
-# 
-snippet bench_snip
-	bench <- microbenchmark::microbenchmark(
-	    times = ${1:100},
-	    control = list(order = "inorder"),
-	    # check = "equal", # uncomment for equal
-	    ${2:one} = {
-	      ${3}
-	      },
-	    ${4:two} = {
-	      ${5}
-	    }
-	    )
-	boxplot(bench)
+# Dec 18, 2023
+# Set a path to a file and open it
+snippet open_file
+	shell.exec(`r pathformatr:::split_path(
+	     paste0(
+	       "here::here(\"", 
+	       rstudioapi::selectFile(
+	       path   = "D:/") |> normalizePath(),
+	       "\")"
+	     ), 
+	     "here") |>
+	    stringr::str_replace("(D|C):", "\\1:/")`)
+
+# ------------------------------------------------------------
+# Shortcut: Open Browser
+# ------------------------------------------------------------
+# Dec 18, 2023
+# Open a web browser from `shell`
+snippet open_edge
+	# profile: either `Default` or `Profile 1`
+	# website: include `https://www.`
+	shell("start msedge /profile-directory=\"${2:Default}\" ${1:website}")
+
+snippet open_chrome
+	# profile: either `Default` or `Profile 1`
+	# website: include `https://www.`
+	shell("start chrome /profile-directory=\"${2:Default}\" ${1:website}")
+
+# ------------------------------------------------------------
+
+
